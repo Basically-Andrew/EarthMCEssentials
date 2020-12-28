@@ -16,7 +16,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import java.lang.String;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
@@ -35,12 +34,12 @@ public class EMCMod implements ModInitializer
     public static String clientNationName = "";
 
     public static boolean timersActivated;
+    public static boolean shouldRender = false;
 
     public static MinecraftClient client;
     public static Screen screen;
     public static ModConfig config;
 
-    public static boolean shouldRender = false;
     public static String queue;
     KeyBinding configKeybind;
 
@@ -257,11 +256,16 @@ public class EMCMod implements ModInitializer
                         case TOP_MIDDLE:
                         {
                             if (townlessState.equals(ModUtils.State.TOP_MIDDLE))
+                            {
                                 nearbyState.setX(ModUtils.getWindowWidth() / 2 - (townlessLongest + nearbyLongest) / 2 + townlessLongest + 5);
+                                nearbyState.setY(config.townless.positionState.getY());
+                            }
                             else
+                            {
                                 nearbyState.setX(ModUtils.getWindowWidth() / 2 - nearbyLongest / 2);
+                                nearbyState.setY(16);
+                            }
 
-                            nearbyState.setY(16);
                             break;
                         }
                         case TOP_RIGHT:
@@ -272,51 +276,64 @@ public class EMCMod implements ModInitializer
                                 nearbyState.setX(ModUtils.getWindowWidth() - nearbyLongest - 5);
 
                             if (client.player != null) nearbyState.setY(ModUtils.getStatusEffectOffset(client.player.getStatusEffects()));
+
                             break;
                         }
-                        case LEFT:
-                        {
+                        case LEFT: {
                             if (config.townless.positionState.equals(ModUtils.State.LEFT))
+                            {
                                 nearbyState.setX(townlessLongest + 10);
-                            else
+                                nearbyState.setY(config.townless.positionState.getY());
+                            }
+                            else {
                                 nearbyState.setX(5);
+                                nearbyState.setY(ModUtils.getWindowHeight() / 2 - ModUtils.getArrayHeight(nearby) / 2);
+                            }
 
-                            nearbyState.setY(ModUtils.getWindowHeight() / 2 - ModUtils.getArrayHeight(nearby) / 2);
                             break;
                         }
-                        case RIGHT:
-                        {
+                        case RIGHT: {
                             if (config.townless.positionState.equals(ModUtils.State.RIGHT))
+                            {
                                 nearbyState.setX(ModUtils.getWindowWidth() - townlessLongest - nearbyLongest - 15);
-                            else
+                                nearbyState.setY(config.townless.positionState.getY());
+                            }
+                            else {
                                 nearbyState.setX(ModUtils.getWindowWidth() - nearbyLongest - 5);
+                                nearbyState.setY(ModUtils.getWindowHeight() / 2 - ModUtils.getArrayHeight(nearby) / 2);
+                            }
 
-                            nearbyState.setY(ModUtils.getWindowHeight() / 2 - ModUtils.getArrayHeight(nearby) / 2);
                             break;
                         }
                         case BOTTOM_RIGHT:
                         {
-                            if (config.townless.positionState.equals(ModUtils.State.BOTTOM_RIGHT))
+                            if (config.townless.positionState.equals(ModUtils.State.BOTTOM_RIGHT)) {
                                 nearbyState.setX(ModUtils.getWindowWidth() - townlessLongest - nearbyLongest - 15);
-                            else
+                                nearbyState.setY(config.townless.positionState.getY());
+                            }
+                            else {
                                 nearbyState.setX(ModUtils.getWindowWidth() - nearbyLongest - 15);
+                                nearbyState.setY(ModUtils.getWindowHeight() - ModUtils.getArrayHeight(nearby) - 10);
+                            }
 
-                            nearbyState.setY(ModUtils.getWindowHeight() - ModUtils.getArrayHeight(nearby) - 10);
                             break;
                         }
                         case BOTTOM_LEFT:
                         {
-                            if (townlessState.equals(ModUtils.State.BOTTOM_LEFT))
+                            if (townlessState.equals(ModUtils.State.BOTTOM_LEFT)) {
                                 nearbyState.setX(townlessLongest + 15);
-                            else
+                                nearbyState.setY(config.townless.positionState.getY());
+                            }
+                            else {
                                 nearbyState.setX(5);
-
-                            nearbyState.setY(ModUtils.getWindowHeight() - ModUtils.getArrayHeight(nearby) - 10);
+                                nearbyState.setY(ModUtils.getWindowHeight() - ModUtils.getArrayHeight(nearby) - 10);
+                            }
                             break;
                         }
-                        default: //Defaults to top left
+                        default: // Defaults to top left
                         {
-                            if (townlessState.equals(ModUtils.State.TOP_LEFT)) nearbyState.setX(townlessLongest + 15);
+                            if (townlessState.equals(ModUtils.State.TOP_LEFT))
+                                nearbyState.setX(townlessLongest + 15);
                             else
                                 nearbyState.setX(5);
 
