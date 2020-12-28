@@ -34,7 +34,6 @@ public class EMCMod implements ModInitializer
     public static String clientNationName = "";
 
     public static boolean timersActivated;
-    public static boolean shouldRender = false;
 
     public static MinecraftClient client;
     public static Screen screen;
@@ -42,6 +41,19 @@ public class EMCMod implements ModInitializer
 
     public static String queue;
     KeyBinding configKeybind;
+
+    public boolean shouldRender()
+    {
+        final String serverName = ModUtils.getServerName();
+
+        // Uses endsWith because EMC has 2 valid IPs (earthmc.net & play.earthmc.net)
+        if (!serverName.endsWith("earthmc.net") && EMCMod.config.general.emcOnly)
+            return false;
+        else if ((serverName.equals("Singleplayer") || serverName.equals("Realms")) && EMCMod.config.general.emcOnly)
+            return false;
+
+        return true;
+    }
 
     @Override
     public void onInitialize() // Called when Minecraft starts.
@@ -75,7 +87,7 @@ public class EMCMod implements ModInitializer
         //#region HudRenderCallback
         HudRenderCallback.EVENT.register(e ->
         {
-            if (!config.general.enableMod || !shouldRender) return;
+            if (!config.general.enableMod || !shouldRender()) return;
 
             final TextRenderer renderer = client.textRenderer;
 
