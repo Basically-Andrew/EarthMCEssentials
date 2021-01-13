@@ -1,9 +1,7 @@
 package net.earthmc.emc.commands;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-
 import io.github.cottonmc.clientcommands.ArgumentBuilders;
 import io.github.cottonmc.clientcommands.CottonClientCommandSource;
 import net.earthmc.emc.EMCMod;
@@ -22,12 +20,12 @@ public class NetherCommand
                 int x = IntegerArgumentType.getInteger(c, "x");
                 int z = IntegerArgumentType.getInteger(c, "z");
                 c.getSource().sendFeedback(new TranslatableText("EMCE > Nether coordinates for " + x + ", " + z + ": " + x / 8 + ", " + z / 8).formatted(Formatting.byName("AQUA")));
-                return Command.SINGLE_SUCCESS;
+                return 1;
 
             })
         ).executes(c -> {
             c.getSource().sendFeedback(new TranslatableText("EMCE > Not enough arguments! (x + z)").formatted(Formatting.byName("RED")));
-            return Command.SINGLE_SUCCESS;
+            return 1;
         })).executes(c ->
         {
             int x;
@@ -46,7 +44,7 @@ public class NetherCommand
                 c.getSource().sendFeedback(new TranslatableText("EMCE > Unable to use your own coordiantes! This is rare.").formatted(Formatting.byName("RED")));
             }
 
-            return Command.SINGLE_SUCCESS;
+            return 1;
         }));
     }
 }

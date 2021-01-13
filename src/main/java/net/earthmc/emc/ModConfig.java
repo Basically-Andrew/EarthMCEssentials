@@ -12,8 +12,6 @@ public class ModConfig implements ConfigData
 	public General general = new General();
     public Townless townless = new Townless();
     public Nearby nearby = new Nearby();
-    public TownInfo townInfo = new TownInfo();
-    public NationInfo nationInfo = new NationInfo();
 
     public static class General
     {
@@ -51,31 +49,5 @@ public class ModConfig implements ConfigData
         public int zRadius = 500;
 
         public ModUtils.State positionState = ModUtils.State.TOP_RIGHT;
-    }
-
-    public static class TownInfo
-    {
-        public boolean enabled = true;
-
-        public String headingTextColour = "GREEN";
-        public String infoTextColour = "GREEN";
-
-        public int xPos = 15;
-        public int yPos = 275;
-
-        public ModUtils.State positionState = ModUtils.State.BOTTOM_RIGHT;
-    }
-
-    public static class NationInfo
-    {
-        public boolean enabled = true;
-
-        public String headingTextColour = "AQUA";
-        public String infoTextColour = "AQUA";
-
-        public int xPos = 15;
-        public int yPos = 375;
-
-        public ModUtils.State positionState = ModUtils.State.BOTTOM_RIGHT;
     }
 }

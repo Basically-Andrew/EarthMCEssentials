@@ -7,8 +7,8 @@ import net.earthmc.emc.commands.NetherCommand;
 import net.earthmc.emc.commands.QueueCommand;
 import net.earthmc.emc.commands.TownlessCommand;
 
-public class ClientSideCommands implements ClientCommandPlugin {
-    
+public class ClientSideCommands implements ClientCommandPlugin
+{
     @Override
     public void registerCommands(CommandDispatcher<CottonClientCommandSource> dispatcher) {
         TownlessCommand.register(dispatcher);

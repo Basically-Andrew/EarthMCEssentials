@@ -22,8 +22,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class EMCMod implements ModInitializer
 {
-    public static JsonArray townless, nearby;
-    public static JsonObject townInfo, nationInfo;
+    public static JsonArray townless, nearby, allNations, allTowns;
 
     int townlessPlayerOffset, nearbyPlayerOffset;
 
@@ -33,27 +32,12 @@ public class EMCMod implements ModInitializer
     public static String clientTownName = "";
     public static String clientNationName = "";
 
-    public static boolean timersActivated;
-
     public static MinecraftClient client;
     public static Screen screen;
     public static ModConfig config;
 
-    public static String queue;
+    public static int queue = 0;
     KeyBinding configKeybind;
-
-    public boolean shouldRender()
-    {
-        final String serverName = ModUtils.getServerName();
-
-        // Uses endsWith because EMC has 2 valid IPs (earthmc.net & play.earthmc.net)
-        if (!serverName.endsWith("earthmc.net") && EMCMod.config.general.emcOnly)
-            return false;
-        else if ((serverName.equals("Singleplayer") || serverName.equals("Realms")) && EMCMod.config.general.emcOnly)
-            return false;
-
-        return true;
-    }
 
     @Override
     public void onInitialize() // Called when Minecraft starts.
@@ -67,8 +51,8 @@ public class EMCMod implements ModInitializer
                 "LIGHT_PURPLE", "DARK_PURPLE", "YELLOW", "GOLD", "GRAY", "DARK_GRAY", "BLACK", "WHITE" };
 
         townless = EmcApi.getTownless();
-        nationInfo = new JsonObject();
-        townInfo = new JsonObject();
+        allNations = new JsonArray();
+        allTowns = new JsonArray();
         nearby = new JsonArray(); // 'new' because the client cant be near anyone yet.
 
         //#region ClientTickEvents
@@ -87,7 +71,7 @@ public class EMCMod implements ModInitializer
         //#region HudRenderCallback
         HudRenderCallback.EVENT.register(e ->
         {
-            if (!config.general.enableMod || !shouldRender()) return;
+            if (!config.general.enableMod || !ModUtils.shouldRender()) return;
 
             final TextRenderer renderer = client.textRenderer;
 
@@ -362,6 +346,8 @@ public class EMCMod implements ModInitializer
 
                     if (nearby.size() >= 1)
                     {
+                        if (client.player == null) return;
+
                         for (int i = 0; i < nearby.size(); i++)
                         {
                             final JsonObject currentPlayer = (JsonObject) nearby.get(i);
@@ -379,57 +365,6 @@ public class EMCMod implements ModInitializer
                         }
                     }
                 }
-            }
-
-            // Town info is enabled and object isn't empty.
-            if (config.townInfo.enabled && !townInfo.entrySet().isEmpty())
-            {
-                Formatting townInfoHeadingFormatting = Formatting.byName(config.townInfo.headingTextColour);
-                Formatting infoTextFormatting = Formatting.byName(config.townInfo.infoTextColour);
-
-                // Draw heading.
-                String townInfoText = new TranslatableText("Town Information - " + clientTownName).formatted(townInfoHeadingFormatting).asFormattedString();
-                renderer.drawWithShadow(townInfoText, config.townInfo.xPos, config.townInfo.yPos - 5, 16777215);
-
-                // Draw info.
-                String mayorText = new TranslatableText("Mayor: " + townInfo.get("mayor").getAsString()).formatted(infoTextFormatting).asFormattedString();
-                if (townInfo.has("mayor")) renderer.drawWithShadow(mayorText, config.townInfo.xPos, config.townInfo.yPos + 10, 16777215);
-
-                String areaText = new TranslatableText("Area/Chunks: " + townInfo.get("area").getAsString()).formatted(infoTextFormatting).asFormattedString();
-                if (townInfo.has("area")) renderer.drawWithShadow(areaText, config.townInfo.xPos, config.townInfo.yPos + 20, 16777215);
-
-                String residentsText = new TranslatableText("Residents: " + townInfo.get("residents").getAsJsonArray().size()).formatted(infoTextFormatting).asFormattedString();
-                if (townInfo.has("residents")) renderer.drawWithShadow(residentsText, config.townInfo.xPos, config.townInfo.yPos + 30, 16777215);
-
-                String locationText = new TranslatableText("Location: " + townInfo.get("x").getAsString() + ", " + townInfo.get("z").getAsString()).formatted(infoTextFormatting).asFormattedString();
-                if (townInfo.has("x") && townInfo.has("z")) renderer.drawWithShadow(locationText, config.townInfo.xPos, config.townInfo.yPos + 40, 16777215);
-            }
-
-            // Nation info is enabled and object isn't empty.
-            if (config.nationInfo.enabled && !nationInfo.entrySet().isEmpty())
-            {
-                Formatting nationInfoHeadingFormatting = Formatting.byName(config.nationInfo.headingTextColour);
-                Formatting nationInfoTextFormatting = Formatting.byName(config.nationInfo.infoTextColour);
-
-                // Draw heading.
-                String nationInfoText = new TranslatableText("Nation Information - " + clientNationName).formatted(nationInfoHeadingFormatting).asFormattedString();
-                renderer.drawWithShadow(nationInfoText, config.nationInfo.xPos, config.nationInfo.yPos - 5, 16777215);
-
-                // Draw info.
-                String kingText = new TranslatableText("King: " + nationInfo.get("king").getAsString()).formatted(nationInfoTextFormatting).asFormattedString();
-                if (nationInfo.has("king")) renderer.drawWithShadow(kingText, config.nationInfo.xPos, config.nationInfo.yPos + 10, 16777215);
-
-                String capitalText = new TranslatableText("Capital: " + nationInfo.get("capitalName").getAsString()).formatted(nationInfoTextFormatting).asFormattedString();
-                if (nationInfo.has("capitalName")) renderer.drawWithShadow(capitalText, config.nationInfo.xPos, config.nationInfo.yPos + 20, 16777215);
-
-                String areaText = new TranslatableText("Area/Chunks: " + nationInfo.get("area").getAsString()).formatted(nationInfoTextFormatting).asFormattedString();
-                if (nationInfo.has("area")) renderer.drawWithShadow(areaText, config.nationInfo.xPos, config.nationInfo.yPos + 30, 16777215);
-
-                String residentsText = new TranslatableText("Residents: " + nationInfo.get("residents").getAsJsonArray().size()).formatted(nationInfoTextFormatting).asFormattedString();
-                if (nationInfo.has("residents")) renderer.drawWithShadow(residentsText, config.nationInfo.xPos, config.nationInfo.yPos + 40, 16777215);
-
-                String townsText = new TranslatableText("Towns: " + nationInfo.get("towns").getAsJsonArray().size()).formatted(nationInfoTextFormatting).asFormattedString();
-                if (nationInfo.has("towns")) renderer.drawWithShadow(townsText, config.nationInfo.xPos, config.nationInfo.yPos + 50, 16777215);
             }
         });
         //#endregion
