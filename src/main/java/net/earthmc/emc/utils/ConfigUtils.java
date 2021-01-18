@@ -30,8 +30,6 @@ public class ConfigUtils
         ConfigCategory general = builder.getOrCreateCategory("General");
         ConfigCategory townless = builder.getOrCreateCategory("Townless");
         ConfigCategory nearby = builder.getOrCreateCategory("Nearby");
-        ConfigCategory townInfo = builder.getOrCreateCategory("Town Info");
-        ConfigCategory nationInfo = builder.getOrCreateCategory("Nation Info");
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
